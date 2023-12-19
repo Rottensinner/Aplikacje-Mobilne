@@ -19,9 +19,9 @@ const ProductCardView = () => {
                 </View>
 
                 <View style={styles.details}>
-                    <Text style={styles.title} numberOfLines={1}>Product title</Text>
-                    <Text style={styles.supplier} numberOfLines={1}>Product</Text>
-                    <Text style={styles.price}>$223</Text>
+                    <Text style={styles.title} numberOfLines={1}>Tytuł produktu</Text>
+                    <Text style={styles.supplier} numberOfLines={1}>Elektronika</Text>
+                    <Text style={styles.price}>223 zł</Text>
 
 
                 </View>
