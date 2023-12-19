@@ -22,8 +22,6 @@ const ProductCardView = () => {
                     <Text style={styles.title} numberOfLines={1}>Tytuł produktu</Text>
                     <Text style={styles.supplier} numberOfLines={1}>Elektronika</Text>
                     <Text style={styles.price}>223 zł</Text>
-
-
                 </View>
                 <TouchableOpacity style={styles.addBtn}>
                     <Ionicons name='add-circle' size={35} color={COLORS.primary}/>

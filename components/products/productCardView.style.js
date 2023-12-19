@@ -4,22 +4,21 @@ import { COLORS, SIZES } from "../../constants";
 const styles = StyleSheet.create({
     container: {
         width: 182,
-        height: 240,
-        marginEnd: 22,
+        height: 260,
         borderRadius: SIZES.medium,
         backgroundColor: COLORS.secondary,
     },
     imageContainer: {
-        flex: 1,
         width: 170,
         marginLeft: SIZES.small/2,
         marginTop: SIZES.small/2,
         borderRadius: SIZES.small,
-        overflow: "hidden",
+        backgroundColor: "white",
     },
     image: {
         aspectRatio: 1,
-        resizeMode: "cover"
+        resizeMode: "contain",
+        maxWidth: "100%"
     },
     details: {
         padding: SIZES.small
@@ -40,8 +39,8 @@ const styles = StyleSheet.create({
     },
     addBtn: {
         position: "absolute",
-        bottom: SIZES.xSmall,
-        right: SIZES.xSmall
+        bottom: SIZES.small/2,
+        right: SIZES.small/2
     }
 })
 
