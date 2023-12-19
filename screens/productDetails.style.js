@@ -18,12 +18,13 @@ const styles = StyleSheet.create({
     },
     image: {
         aspectRatio: 1,
-        resizeMode: "cover"
+        resizeMode: "cover",
+        maxWidth: "100%",
+        maxHeight: "500px",
     },
     details: {
         marginTop: -SIZES.large,
         backgroundColor: COLORS.lightWhite,
-        width: SIZES.width,
         borderTopLeftRadius: SIZES.medium,
         borderTopRightRadius: SIZES.medium,        
     },
@@ -33,7 +34,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        width: SIZES.width -44,
         top: 20
     },
     title: {
@@ -54,7 +54,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        width: SIZES.width -10,
         top: 5
     },
     rating: {
