@@ -11,23 +11,25 @@ import ProductRow from '../components/products/ProductRow';
 const Home = () => {
     return (
         <SafeAreaView>
-            <View style={styles.appBarWrapper}>
-                <View style={styles.appBar}>
-                    <View>
-                        <View style={styles.cartCount}>
-                            <Text style={styles.cartNumber}>8</Text>
+            <ScrollView>
+                <View style={styles.appBarWrapper}>
+                    <View style={styles.appBar}>
+                        <View>
+                            <View style={styles.cartCount}>
+                                <Text style={styles.cartNumber}>8</Text>
+                            </View>
+                            <TouchableOpacity>
+                                <Fontisto name='shopping-bag' size={24}/>
+                            </TouchableOpacity>
                         </View>
-                        <TouchableOpacity>
-                            <Fontisto name='shopping-bag' size={24}/>
-                        </TouchableOpacity>
                     </View>
                 </View>
-            </View>
-            <ScrollView>
-                <Welcome />
-                <Carousel />
-                <Headings />
-                <ProductRow />
+                <View style={{marginBottom: 82}}>
+                    <Welcome />
+                    <Carousel />
+                    <Headings />
+                    <ProductRow />
+                </View>
             </ScrollView>
         </SafeAreaView>
     )

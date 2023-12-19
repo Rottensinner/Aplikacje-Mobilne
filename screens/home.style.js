@@ -7,6 +7,7 @@ const styles = StyleSheet.create({
         fontSize: 40
     },
     appBarWrapper: {
+        flex: 1,
         marginHorizontal: 22,
         marginTop: SIZES.small,
     },

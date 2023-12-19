@@ -17,8 +17,10 @@ const styles = StyleSheet.create({
     },
     image: {
         aspectRatio: 1,
-        resizeMode: "contain",
-        maxWidth: "100%"
+        width: null,
+        resizeMode: 'contain',
+        height: null,
+        borderRadius: SIZES.small,
     },
     details: {
         padding: SIZES.small

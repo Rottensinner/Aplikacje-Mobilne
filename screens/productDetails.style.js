@@ -17,10 +17,10 @@ const styles = StyleSheet.create({
         zIndex: 999,
     },
     image: {
-        aspectRatio: 1,
-        resizeMode: "cover",
         maxWidth: "100%",
-        maxHeight: "500px",
+        width: '100%',
+        height: undefined,
+        aspectRatio: 1,
     },
     details: {
         marginTop: -SIZES.large,
