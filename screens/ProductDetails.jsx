@@ -1,10 +1,14 @@
 import { Text, View, TouchableOpacity, Image } from 'react-native';
 import React, {useState} from 'react';
+import { useRoute } from '@react-navigation/native';
 import styles from './productDetails.style';
 import { Ionicons, SimpleLineIcons, MaterialCommunityIcons, Fontisto } from "@expo/vector-icons";
 import { COLORS, SIZES } from '../constants';
 
 const ProductDetails = ({navigation}) => {
+    const rout = useRoute();
+    const {item} = rout.params;
+    console.log(item);
     const [count, setCount] = useState(10)
 
     const decrement = () => {
@@ -35,15 +39,15 @@ const ProductDetails = ({navigation}) => {
                 </TouchableOpacity>
             </View>
             <Image
-                source={require('../assets/carousel-images/pexels-pixabay-163073.jpg')}
+                source={{uri: item.imageUrl}}
                 style={styles.image}
             />
 
             <View style={styles.details}>
                 <View style={styles.titleRow}>
-                    <Text style={styles.title}>Tytuł produktu</Text>
+                    <Text style={styles.title}>{item.title}</Text>
                     <View style={styles.priceWrapper}>
-                        <Text style={styles.price}>123.45 zł</Text>
+                        <Text style={styles.price}>{item.price}</Text>
                     </View>
                 </View>
 
@@ -83,16 +87,14 @@ const ProductDetails = ({navigation}) => {
                     <Text style={styles.description}>
                         Opis produktu
                     </Text>
-                    <Text style={styles.descText}>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quos cumque deleniti, ex repudiandae quaerat similique vero debitis, reiciendis quam natus aut provident dicta ratione error beatae expedita ullam, incidunt nam.
-                    </Text>
+                    <Text style={styles.descText}>{item.description}</Text>
                 </View>
 
                 <View style={{marginBottom: SIZES.xLarge}}>
                     <View style={styles.location}>
                         <View style={{flexDirection: "row"}}>
                             <Ionicons name='location-outline' size={20}/>
-                            <Text> Kielce</Text>
+                            <Text> {item.product_location}</Text>
                         </View>
                         <View style={{flexDirection: "row"}}>
                             <MaterialCommunityIcons name='truck-delivery-outline' size={20}/>
