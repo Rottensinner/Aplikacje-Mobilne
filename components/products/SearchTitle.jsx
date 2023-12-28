@@ -10,7 +10,8 @@ const SearchTitle =({item}) =>{
         <TouchableOpacity style={styles.container} onPress={()=>navigation.navigate('ProductDetails',{item})}>
             <View style={styles.image}>
             <Image source={{uri: item.ImageUrl}}
-            style={styles.productImg}/>
+            style={styles.productImg}
+            resizeMode="contain"/>
             </View>
             <View style={styles.textContainer}>
                 <Text style={styles.productTitle}>{item.title}</Text>
