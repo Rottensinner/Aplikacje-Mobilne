@@ -97,3 +97,108 @@ const LoginPage = ({ navigation }) => {
           ]
         );
       }
+    } catch (error) {
+      console.error("Błąd logowania:", error);
+      Alert.alert(
+        "Błąd logowania",
+        "Wystąpił problem podczas logowania. Spróbuj ponownie.",
+        [
+          {
+            text: "Ok",
+            onPress: () => console.log("Tak"),
+          },
+        ]
+      );
+    } finally {
+      setLoader(false);
+    }
+  };
+
+  return (
+    <ScrollView>
+      <SafeAreaView style={{ marginHorizontal: 20 }}>
+        <BackBtn onPress={() => navigation.goBack()}></BackBtn>
+        <View>
+          <Text style={styles.title}>Nie bądz taki zaloguj się</Text>
+          <Formik
+            initialValues={{ email: '', password: '' }}
+            validationSchema={validationSchema}
+            onSubmit={(values) => login(values)}
+          >
+            {({ handleChange, handleBlur, touched, handleSubmit, values, errors, isValid, setFieldTouched }) => (
+              <View>
+                <View style={styles.wrapper}>
+                  <Text style={styles.label}>Email</Text>
+                  <View style={styles.inputWrapper(touched.email ? COLORS.gray : COLORS.offwhite)}>
+                    <MaterialCommunityIcons
+                      name="email-outline"
+                      size={20}
+                      color={COLORS.gray}
+                      style={styles.iconStyle}
+                    />
+                    <TextInput
+                      placeholder="Email"
+                      onFocus={() => { setFieldTouched('email') }}
+                      onBlur={() => { setFieldTouched('email', '') }}
+                      value={values.email}
+                      onChangeText={handleChange('email')}
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      style={{ flex: 1 }}
+                    />
+                  </View>
+                  {touched.email && errors.email && (
+                    <Text style={styles.errorMessage}>{errors.email}</Text>
+                  )}
+                </View>
+
+                <View style={styles.wrapper}>
+                  <Text style={styles.label}>Password</Text>
+                  <View style={styles.inputWrapper(touched.password ? COLORS.gray : COLORS.offwhite)}>
+                    <MaterialCommunityIcons
+                      name="lock-outline"
+                      size={20}
+                      color={COLORS.gray}
+                      style={styles.iconStyle}
+                    />
+                    <TextInput
+                      secureTextEntry={obscureText}
+                      placeholder="Password"
+                      onFocus={() => { setFieldTouched('password') }}
+                      onBlur={() => { setFieldTouched('password', '') }}
+                      value={values.password}
+                      onChangeText={handleChange('password')}
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      style={{ flex: 1 }}
+                    />
+                    <TouchableOpacity onPress={() => { setObsecureText(!obscureText) }}>
+                      <MaterialCommunityIcons
+                        name={obscureText ? "eye-outline" : "eye-off-outline"}
+                        size={18}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  {touched.password && errors.password && (
+                    <Text style={styles.errorMessage}>{errors.password}</Text>
+                  )}
+                </View>
+
+
+                <Button
+                loader={loader}
+                 title={"L O G I N"}
+                 onPress={isValid ? handleSubmit : invalidForm} 
+                 isValid={isValid}
+                 />
+                <Text style={styles.registration} onPress={() => navigation.navigate('SignUp')}>Register</Text>
+              </View>
+            )}
+          </Formik>
+        </View>
+      </SafeAreaView>
+    </ScrollView>
+  )
+}
+
+
