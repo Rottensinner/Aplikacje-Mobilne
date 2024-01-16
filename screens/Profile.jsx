@@ -54,5 +54,92 @@ const Profile = ({ navigation }) => {
     }
   };
 
+  return (
+    <View style={styles.container}>
+      <View style={{ width: '100%' }}>
+        <Image
+          source={require('../assets/images/space.jpg')}
+          style={styles.cover}
+        />
+      </View>
+      <View style={styles.profileContainer}>
+        <Image
+          source={require('../assets/images/profile.jpg')}
+          style={styles.profile}
+        />
+        <Text style={styles.name}>
+        {userLogin === true ? userData.username : 'jestem ziemniaczkiem'}
+        </Text>
+        {userLogin  ? (
+          <View style={styles.loginBtn}>
+            <Text style={styles.menuText}> {userData ? userData.userName : "kotek"}</Text>
+          </View>
+        ) : (
+          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+            <View style={styles.loginBtn}>
+              <Text style={styles.menuText}>L O G I N</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+
+        {userLogin === true ? (
+          <View style={styles.menuWrapper}>
+            <TouchableOpacity onPress={() => navigation.navigate('Orders')}>
+              <View style={styles.menuItem(0.2)}>
+                <MaterialCommunityIcons
+                  name="truck-delivery-outline"
+                  color={COLORS.primary}
+                  size={24}
+                />
+                <Text style={styles.menuText}>Orders</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
+              <View style={styles.menuItem(0.2)}>
+                <MaterialCommunityIcons
+                  name="cart"
+                  color={COLORS.primary}
+                  size={24}
+                />
+                <Text style={styles.menuText}>koszyk</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => ClearCache()}>
+              <View style={styles.menuItem(0.2)}>
+                <MaterialCommunityIcons
+                  name="cash"
+                  color={COLORS.primary}
+                  size={24}
+                />
+                <Text style={styles.menuText}>Clear Cache</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => deleteAccount()}>
+              <View style={styles.menuItem(0.2)}>
+                <AntDesign
+                  name="deleteuser"
+                  color={COLORS.primary}
+                  size={24}
+                />
+                <Text style={styles.menuText}>delete User</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => logout()}>
+              <View style={styles.menuItem(0.2)}>
+                <AntDesign
+                  name="logout"
+                  color={COLORS.primary}
+                  size={24}
+                />
+                <Text style={styles.menuText}>Logout</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        ) : null}
+      </View>
+    </View>
+  );
 };
+
 export default Profile;
