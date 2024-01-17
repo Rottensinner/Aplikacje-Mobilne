@@ -12,7 +12,6 @@ const Profile = ({ navigation }) => {
 
   useEffect(() => {
     checkExistingUser();
-    getUsernameFromStorage();
   }, []);
 
   const checkExistingUser = async () => {
@@ -36,6 +35,35 @@ const Profile = ({ navigation }) => {
     }
   };
 
+  const ClearCache = () => {
+    Alert.alert(
+      "Clear Cache",
+      "Jesteś pewien że chcesz usunąć zapisane dane?",
+      [
+        {
+          text: "Nie", onPress: () => console.log("Nie")
+        },
+        {
+          text: "Tak", onPress: () => console.log("Tak")
+        },
+      ]
+    )
+  }
+
+  const deleteAccount = () => {
+    Alert.alert(
+      "DELETE",
+      "Chcesz usunąć konto?",
+      [
+        {
+          text: "Nie", onPress: () => console.log("Zostałeś dalej z nami")
+        },
+        {
+          text: "Tak", onPress: () => console.log("Może jeszcze kiedyś wrócisz..")
+        },
+      ]
+    )
+  }
   const getUsernameFromStorage = async () => {
     try {
       const userName = await AsyncStorage.getItem('userName');
@@ -53,7 +81,21 @@ const Profile = ({ navigation }) => {
       console.error('Błąd podczas pobierania username z AsyncStorage:', error);
     }
   };
-
+  useEffect(() => {
+    getUsernameFromStorage();
+  }, []);
+  const logout = async () => {
+    try {
+      // Usunięcie tokena autoryzacji lub danych sesji
+      await AsyncStorage.removeItem('authToken'); // Przykład dla React Native
+      
+      // Przekierowanie użytkownika na ekran logowania
+      navigation.replace('Login'); // Przykład dla React Navigation
+    } catch (error) {
+      console.error('Błąd podczas wylogowywania:', error);
+    }
+  };
+  console.log(username);
   return (
     <View style={styles.container}>
       <View style={{ width: '100%' }}>
