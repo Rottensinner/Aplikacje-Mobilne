@@ -2,7 +2,6 @@ import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 
-
 const ChangeProfilePicture = ({ onImageSelected }) => {
   const takePhotoAndUpdate = () => {
     const options = {
@@ -48,3 +47,4 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
 });
+
