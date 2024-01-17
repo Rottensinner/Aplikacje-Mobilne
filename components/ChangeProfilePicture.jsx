@@ -1,9 +1,34 @@
 import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
-
+import { PermissionsAndroid } from 'react-native';
 
 const ChangeProfilePicture = ({ onImageSelected }) => {
+  const checkCameraPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        {
+          title: 'Cool Photo App Camera Permission',
+          message:
+            'Cool Photo App needs access to your camera ' +
+            'so you can take awesome pictures.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('Camera permission granted');
+        takePhotoAndUpdate();
+      } else {
+        console.log('Camera permission denied');
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+
   const takePhotoAndUpdate = () => {
     const options = {
       saveToPhotos: true,
@@ -24,7 +49,7 @@ const ChangeProfilePicture = ({ onImageSelected }) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={takePhotoAndUpdate} style={styles.buttonContainer}>
+      <TouchableOpacity onPress={checkCameraPermission} style={styles.buttonContainer}>
         <Text style={styles.buttonText}>Zrób i zmień zdjęcie</Text>
       </TouchableOpacity>
     </View>
