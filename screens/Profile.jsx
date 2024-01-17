@@ -200,7 +200,7 @@ console.log(username);
           </View>
         ) : null}
       </View>
-    </View>
+    </View> 
   );
 };
 
