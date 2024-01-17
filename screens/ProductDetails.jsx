@@ -20,6 +20,28 @@ const ProductDetails = ({navigation}) => {
     const increment = () => {
         setCount(count + 1)
     }
+    
+    const addToCart = () => {
+        // Przykład danych produktu, które zostaną przekazane do funkcji dodawania do koszyka
+        const cartItem = {
+            productId: item._id, // ID produktu
+            quantity: count, // Ilość produktu
+        };
+
+        // Wywołaj funkcję do dodawania produktu do koszyka
+        addToCartFunction(cartItem)
+            .then((response) => {
+                // Obsłuż odpowiedź, np. wyświetl powiadomienie o sukcesie
+                console.log('Produkt dodany do koszyka', response);
+
+                // Tutaj możesz dodać dodatkową logikę, jeśli jest taka potrzeba,
+                // np. wyświetlić powiadomienie lub zaktualizować stan komponentu
+            })
+            .catch((error) => {
+                // Obsłuż błąd, np. wyświetl komunikat o błędzie
+                console.error('Błąd podczas dodawania produktu do koszyka', error);
+            });
+    };
 
     return (
         <View style={styles.container}>
@@ -107,9 +129,12 @@ const ProductDetails = ({navigation}) => {
                     <TouchableOpacity onPress={()=>{}} style={styles.cartBtn}>
                         <Text style={styles.cartTitle}>KUP TERAZ</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={()=>{}} style={styles.addToCartBtn}>
-                        <Text style={styles.cartTitle}>DODAJ DO KOSZYKA</Text>
-                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => {
+    addToCart(); // Wywołaj funkcję addToCart, która dodaje produkt do koszyka
+    navigation.navigate('Cart', { cartItem: item }); // Przekazuje dane produktu do komponentu Cart
+}}>
+    <Text style={styles.cartTitle}>DODAJ DO KOSZYKA</Text>
+</TouchableOpacity>
                 </View>
             </View>
         </View>

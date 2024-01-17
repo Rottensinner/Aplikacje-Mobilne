@@ -7,14 +7,22 @@ import useFetch from '../../hook/useFetch';
 
 const ProductRow = () => {
     const { data, isLoading, error } = useFetch();
-    const products = [1, 2, 3, 4];
 
-    // Dodanie logiki do obsługi błędu
+    // Obsługa błędów sieciowych
     if (error) {
         console.log("Wystąpił błąd podczas pobierania danych:", error);
         return (
             <View style={styles.container}>
-                <Text>Coś poszło nie tak</Text>
+                <Text>Wystąpił błąd sieciowy. Spróbuj ponownie później.</Text>
+            </View>
+        );
+    }
+
+    // Obsługa braku danych
+    if (!data || data.length === 0) {
+        return (
+            <View style={styles.container}>
+                <Text>Brak dostępnych produktów.</Text>
             </View>
         );
     }
@@ -25,11 +33,11 @@ const ProductRow = () => {
                 <ActivityIndicator size={SIZES.xxLarge} color={COLORS.primary} />
             ) : (
                 <FlatList
-                    data={data || products} // Zastępcze dane, jeśli brak danych
+                    data={data}
                     keyExtractor={(item) => item._id}
                     renderItem={({ item }) => <ProductCardView item={item} />}
                     horizontal
-                    contentContainerStyle={{ columnGap: SIZES.medium }}
+                    contentContainerStyle={{ padding: SIZES.medium }}
                 />
             )}
         </View>
