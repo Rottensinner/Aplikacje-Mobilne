@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+// Importowanie stałych kolorów i rozmiarów z pliku constants
 import { COLORS, SIZES } from "../../constants";
 
 const styles = StyleSheet.create({

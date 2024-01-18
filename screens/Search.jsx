@@ -6,42 +6,50 @@ import { useNavigation } from '@react-navigation/native';
 import { COLORS, SIZES } from '../constants';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import axios from 'axios';
-import { FlatList } from 'react-native-web';
+import { FlatList } from 'react-native';
 import SearchTitle from '../components/products/SearchTitle';
 
 
 const Search = () => {
-  const [searchKey,setSearchKey]=useState('');
-  const [searchResults, setSearchResoults] = useState('')
-  console.log(searchResults);
-  //http://localhost:3000/api/products/search/${searchKey}
- const handleSearch = async () => {
-  try {
-    const response = await axios.get(`http://10.10.2.2:3000/api/products/search/${searchKey}`);
-    setSearchResoults(response.data)
-  } catch (error) {
-    console.log("Nie udało się", error);
+  const [searchKey, setSearchKey] = useState('');
+  const [searchResults, setSearchResults] = useState('');
+  console.log('Search Results:', searchResults);
+
+  const handleSearch = async () => {
+    try {
+      console.log('Search Key:', searchKey); // Log the search key before sending the request
+  
+      const response = await axios.get(`http://10.10.2.2:3000/api/products/search/${searchKey}`);
+      console.log('Response Data:', response.data);
+      setSearchResults(response.data);
+    } catch (error) {
+      console.log('Error:', error);
+    }
   }
-}
+
+  const handleSearchKeyChange = (text) => {
+    console.log('Search Key:', text);
+    setSearchKey(text);
+  }
 
   return (
     <SafeAreaView>
       <View style={styles.searchContainer}>
-          <TouchableOpacity>
-              <Ionicons name="camera-outline" size={SIZES.xLarge} style={styles.searchIcon}/>
+        <TouchableOpacity>
+          <Ionicons name="camera-outline" size={SIZES.xLarge} style={styles.searchIcon} />
+        </TouchableOpacity>
+        <View style={styles.searchWrapper}>
+          <TextInput
+            style={styles.searchInput}
+            value={searchKey}
+            onChangeText={handleSearchKeyChange}
+            placeholder="Czego szukasz?"
+          />
+        </View>
+        <View>
+          <TouchableOpacity style={styles.searchBtn} onPress={() => handleSearch()}>
+            <Feather name="search" size={24} color={COLORS.offwhite} />
           </TouchableOpacity>
-          <View style={styles.searchWrapper}>
-              <TextInput
-                  style={styles.searchInput}
-                  value={searchKey}
-                  onChangeText={setSearchKey}
-                  placeholder="Czego szukasz?"
-              />
-          </View>
-          <View>
-              <TouchableOpacity style={styles.searchBtn} onPress={()=>handleSearch()}>
-                  <Feather name="search" size={24} color={COLORS.offwhite} />
-              </TouchableOpacity>
           </View>
       </View>
       {searchResults.length === 0 ?(
@@ -52,10 +60,10 @@ const Search = () => {
       ):(
         <FlatList
         data={searchResults}
-        keyExtractor={(item)=> item._id}
-        renderItem={({item})=>(<SearchTitle item= {item}/>)}
-        style={{marginHorizontal:12}}
-        />
+        keyExtractor={(item) => item._id}
+        renderItem={({ item }) => <SearchTitle item={item} />}
+        style={{ marginHorizontal: 12 }}
+      />
       )}
     </SafeAreaView>
   )

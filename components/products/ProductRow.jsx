@@ -1,11 +1,14 @@
+// Importowanie niezbędnych komponentów, stylów, zasobów i hooka do pobierania danych
 import React from 'react';
 import { ActivityIndicator, FlatList, Text, View } from 'react-native';
-import { COLORS, SIZES } from '../../constants';
-import ProductCardView from './ProductCardView';
-import styles from './productRow.style';
-import useFetch from '../../hook/useFetch';
+import { COLORS, SIZES } from '../../constants'; // Importowanie stałych kolorów i rozmiarów
+import ProductCardView from './ProductCardView'; // Importowanie komponentu karty produktu
+import styles from './productRow.style'; // Importowanie stylów z pliku productRow.style.js
+import useFetch from '../../hook/useFetch'; // Importowanie hooka do pobierania danych
 
+// Komponent ProductRow
 const ProductRow = () => {
+    // Destructuring zwróconych danych, stanu ładowania i ewentualnego błędu
     const { data, isLoading, error } = useFetch();
 
     // Obsługa błędów sieciowych
@@ -29,19 +32,21 @@ const ProductRow = () => {
 
     return (
         <View style={styles.container}>
+            {/* Warunek, jeśli dane są w trakcie ładowania */}
             {isLoading ? (
                 <ActivityIndicator size={SIZES.xxLarge} color={COLORS.primary} />
             ) : (
+                // Komponent FlatList do renderowania listy produktów w trybie poziomym
                 <FlatList
                     data={data}
-                    keyExtractor={(item) => item._id}
-                    renderItem={({ item }) => <ProductCardView item={item} />}
-                    horizontal
-                    contentContainerStyle={{ padding: SIZES.medium }}
+                    keyExtractor={(item) => item._id} // Klucz dla elementów listy
+                    renderItem={({ item }) => <ProductCardView item={item} />} // Renderowanie pojedynczego elementu
+                    horizontal // Ustawienie listy w trybie poziomym
+                    contentContainerStyle={{ padding: SIZES.medium }} // Styl kontenera dla zawartości listy
                 />
             )}
         </View>
     );
 };
 
-export default ProductRow;
+export default ProductRow; // Eksportowanie komponentu ProductRow

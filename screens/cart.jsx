@@ -6,6 +6,7 @@ import { COLORS } from '../constants';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// Komponent koszyka
 const Cart = ({ navigation }) => {
   // Definicja zmiennych stanu
   const [cartData, setCartData] = useState([]); // Przechowuje elementy koszyka
@@ -93,6 +94,8 @@ const Cart = ({ navigation }) => {
       Alert.alert('Błąd', 'Nie udało się złożyć zamówienia.');
     }
   };
+
+  // Funkcja do zwiększania ilości produktu w koszyku
   const increaseQuantity = (cartItemId, productId) => {
     const updatedCartData = [...cartData];
     const cartItem = updatedCartData.find((item) => item._id === cartItemId);
@@ -105,6 +108,7 @@ const Cart = ({ navigation }) => {
     }
   };
   
+  // Funkcja do zmniejszania ilości produktu w koszyku
   const decreaseQuantity = (cartItemId, productId) => {
     const updatedCartData = [...cartData];
     const cartItem = updatedCartData.find((item) => item._id === cartItemId);
@@ -125,72 +129,71 @@ const Cart = ({ navigation }) => {
         <Text style={styles.emptyCartText}>Twój koszyk jest pusty.</Text>
       ) : (
         <FlatList
-  data={cartData}
-  keyExtractor={(item) => item._id.toString()}
-  renderItem={({ item }) => (
-    <View style={styles.cartItem}>
-      {item.products.map((product, index) => {
-        // Pobierz cenę produktu z obiektu produktu
-        const productPrice = parseFloat(product.cartItem.price);
+          data={cartData}
+          keyExtractor={(item) => item._id.toString()}
+          renderItem={({ item }) => (
+            <View style={styles.cartItem}>
+              {item.products.map((product, index) => {
+                // Pobierz cenę produktu z obiektu produktu
+                const productPrice = parseFloat(product.cartItem.price);
 
-        return (
-            <View style={styles.productContainer} key={index}>
-            <Image
-              source={{ uri: product.cartItem.imageUrl }}
-              style={styles.productThumbnail}
-            />
-            <View style={styles.productInfo}>
-              <Text style={styles.productName}>Nazwa produktu: {product.cartItem.title}</Text>
-              <Text style={styles.productPrice}>Cena produktu: {productPrice.toFixed(2)} zł</Text>
-              <View style={styles.quantityContainer}>
-                <TouchableOpacity onPress={() => increaseQuantity(item._id, product._id)} style={styles.quantityButton}>
-                  <Text style={styles.quantityButtonText}>+</Text>
-                </TouchableOpacity>
-                <Text style={styles.productQuantity}>{product.quantity}</Text>
-                <TouchableOpacity onPress={() => decreaseQuantity(item._id, product._id)} style={styles.quantityButton}>
-                  <Text style={styles.quantityButtonText}>-</Text>
-                </TouchableOpacity>
-              </View>
+                return (
+                  <View style={styles.productContainer} key={index}>
+                    <Image
+                      source={{ uri: product.cartItem.imageUrl }}
+                      style={styles.productThumbnail}
+                    />
+                    <View style={styles.productInfo}>
+                      <Text style={styles.productName}>Nazwa produktu: {product.cartItem.title}</Text>
+                      <Text style={styles.productPrice}>Cena produktu: {productPrice.toFixed(2)} zł</Text>
+                      <View style={styles.quantityContainer}>
+                        <TouchableOpacity onPress={() => increaseQuantity(item._id, product._id)} style={styles.quantityButton}>
+                          <Text style={styles.quantityButtonText}>+</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.productQuantity}>{product.quantity}</Text>
+                        <TouchableOpacity onPress={() => decreaseQuantity(item._id, product._id)} style={styles.quantityButton}>
+                          <Text style={styles.quantityButtonText}>-</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  </View>
+                );
+              })}
+              {/* Przycisk do usuwania przedmiotu z koszyka */}
+              <TouchableOpacity onPress={() => removeFromCart(item._id)}>
+                <MaterialCommunityIcons
+                  name="delete"
+                  size={24}
+                  color={COLORS.primary}
+                />
+              </TouchableOpacity>
             </View>
-          </View>
-        );
-      })}
-      {/* Przycisk do usuwania przedmiotu z koszyka */}
-      <TouchableOpacity onPress={() => removeFromCart(item._id)}>
-        <MaterialCommunityIcons
-          name="delete"
-          size={24}
-          color={COLORS.primary}
+          )}
         />
-      </TouchableOpacity>
-    </View>
-  )}
-/>
       )}
       {cartData.length > 0 && (
-  <View style={styles.cartFooter}>
-    <Text style={styles.totalPrice}>
-      Razem: {cartData.reduce((total, item) => {
-        // Sumuj ceny produktów w koszyku
-        const itemTotalPrice = item.products.reduce((subtotal, product) => {
-          // Pobierz cenę produktu z obiektu
-          const productPrice = parseFloat(product.cartItem.price);
-          // Oblicz cenę produktu pomnożoną przez ilość
-          const productTotal = productPrice * product.quantity;
-          return subtotal + productTotal;
-        }, 0);
-        return total + itemTotalPrice;
-      }, 0).toFixed(2)} zł
-    </Text>
-    <TouchableOpacity
-      style={styles.placeOrderButton}
-      onPress={placeOrder}
-    >
-      <Text style={styles.placeOrderButtonText}>Złóż zamówienie</Text>
-    </TouchableOpacity>
-  </View>
-)}
-
+        <View style={styles.cartFooter}>
+          <Text style={styles.totalPrice}>
+            Razem: {cartData.reduce((total, item) => {
+              // Sumuj ceny produktów w koszyku
+              const itemTotalPrice = item.products.reduce((subtotal, product) => {
+                // Pobierz cenę produktu z obiektu
+                const productPrice = parseFloat(product.cartItem.price);
+                // Oblicz cenę produktu pomnożoną przez ilość
+                const productTotal = productPrice * product.quantity;
+                return subtotal + productTotal;
+              }, 0);
+              return total + itemTotalPrice;
+            }, 0).toFixed(2)} zł
+          </Text>
+          <TouchableOpacity
+            style={styles.placeOrderButton}
+            onPress={placeOrder}
+          >
+            <Text style={styles.placeOrderButtonText}>Złóż zamówienie</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 };

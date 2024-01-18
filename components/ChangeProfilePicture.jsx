@@ -1,9 +1,18 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import * as ImagePicker from 'expo-image-picker';
 import { PermissionsAndroid } from 'react-native';
 
 const ChangeProfilePicture = ({ onImageSelected }) => {
+  const [mounted, setMounted] = useState(true);
+
+  useEffect(() => {
+    return () => {
+      // Component unmounted, setMounted to false
+      setMounted(false);
+    };
+  }, []);
+
   const checkCameraPermission = async () => {
     try {
       const granted = await PermissionsAndroid.request(
@@ -18,7 +27,8 @@ const ChangeProfilePicture = ({ onImageSelected }) => {
           buttonPositive: 'OK',
         },
       );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+
+      if (mounted && granted === PermissionsAndroid.RESULTS.GRANTED) {
         console.log('Camera permission granted');
         takePhotoAndUpdate();
       } else {
@@ -29,22 +39,24 @@ const ChangeProfilePicture = ({ onImageSelected }) => {
     }
   };
 
-  const takePhotoAndUpdate = () => {
-    const options = {
-      saveToPhotos: true,
-      mediaType: 'photo',
-    };
+  const takePhotoAndUpdate = async () => {
+    if (mounted) {
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
 
-    launchCamera(options, (response) => {
-      if (response.didCancel) {
-        console.log('User cancelled camera');
-      } else if (response.error) {
-        console.log('Camera Error: ', response.error);
-      } else {
-        const source = { uri: response.uri };
+      if (!result.canceled) {
+        const source = result.assets[0].uri;
+        console.log(source);
         onImageSelected(source);
+      } else {
+        // User cancelled the camera action, re-request permissions
+        checkCameraPermission();
       }
-    });
+    }
   };
 
   return (
@@ -55,8 +67,6 @@ const ChangeProfilePicture = ({ onImageSelected }) => {
     </View>
   );
 };
-
-export default ChangeProfilePicture;
 
 const styles = StyleSheet.create({
   container: {
@@ -73,3 +83,5 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
 });
+
+export default ChangeProfilePicture;

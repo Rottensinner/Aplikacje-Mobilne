@@ -87,7 +87,7 @@ const LoginPage = ({ navigation }) => {
                 ]
               );
             }
-          }, 1000); // Możesz dostosować opóźnienie według własnych potrzeb.
+          }, 1000); //Opóźnienie żeby serwer podał dane
         }
       } else {
         Alert.alert(

@@ -115,10 +115,10 @@ console.log(username);
       </View>
       <View style={styles.profileContainer}>
         <TouchableOpacity onPress={() => {/* Otworzenie wyboru zdjęć */}}>
-          <Image
-            source={profilePic ? { uri: profilePic } : require('../assets/images/profile.jpg')}
-            style={styles.profile}
-          />
+        <Image
+  source={profilePic ? { uri: profilePic } : require('../assets/images/profile.jpg')}
+  style={styles.profile}
+/>
         </TouchableOpacity>
         {/* Usunięcie błędnego obrazu aparatu i zastąpienie go komponentem ChangeProfilePicture */}
         <ChangeProfilePicture onImageSelected={handleImageSelected} />

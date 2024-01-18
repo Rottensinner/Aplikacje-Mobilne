@@ -1,28 +1,31 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Home, Profile, Search } from "../screens";
+import { Home, Profile, Search } from "../screens"; // Importowanie komponentów ekranów
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "../constants/index";
 
 const Tab = createBottomTabNavigator();
 
+// Opcje wyświetlania na dole ekranu
 const screenOptions = {
-  tabBarShowLabel: false,
-  tabBarHideOnKey: true,
-  headerShown: false,
+  tabBarShowLabel: false, // Ukrycie etykiet na pasku nawigacyjnym
+  tabBarHideOnKey: true, // Ukrycie paska nawigacyjnego podczas wprowadzania tekstu
+  headerShown: false, // Ukrycie nagłówka
   tabBarStyle: {
-    position: "absolute",
+    position: "absolute", // Ustawienie absolutnej pozycji paska nawigacyjnego
     bottom: 0,
     right: 0,
     left: 0,
-    elevation: 0,
-    height: 70,
+    elevation: 0, // Zera cienia na Androidzie
+    height: 70, // Wysokość paska nawigacyjnego
   }
 }
 
+// Komponent nawigacji dolnej zakładki
 const BottomTabNavigation = () => {
   return (
     <Tab.Navigator screenOptions={screenOptions}>
+        {/* Ekran domowy */}
         <Tab.Screen
          name="Home"
          component={Home}
@@ -38,6 +41,7 @@ const BottomTabNavigation = () => {
             },
          }}
         />
+        {/* Ekran wyszukiwania */}
         <Tab.Screen
          name="Search"
          component={Search}
@@ -53,6 +57,7 @@ const BottomTabNavigation = () => {
             },
          }}
         />
+        {/* Ekran profilu */}
         <Tab.Screen
          name="Profile"
          component={Profile}
@@ -72,4 +77,4 @@ const BottomTabNavigation = () => {
   )
 }
 
-export default BottomTabNavigation
+export default BottomTabNavigation; // Eksportowanie komponentu nawigacji dolnej zakładki
