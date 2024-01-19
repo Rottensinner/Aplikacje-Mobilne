@@ -41,7 +41,7 @@ const Welcome = () => {
         <View>
           {/* Przycisk aparatu z ikoną kamery */}
           <TouchableOpacity style={styles.searchBtn}>
-            <Ionicons name="camera-outline" size={SIZES.xLarge} color={COLORS.offwhite} />
+            {/* <Ionicons name="camera-outline" size={SIZES.xLarge} color={COLORS.offwhite} /> */}
           </TouchableOpacity>
         </View>
       </View>

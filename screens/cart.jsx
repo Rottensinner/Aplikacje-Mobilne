@@ -89,24 +89,35 @@ const Cart = ({ navigation }) => {
   // Funkcja do składania zamówienia
   const placeOrder = async () => {
     try {
-      
         // Przygotowanie danych zamówienia
         const orderData = {
             userId,
+            CustomerId: userId,
             products: cartData.map(item => ({
                 productId: item.productId,
-                quantity: item.quantity
-            })),
-            // Dodaj inne wymagane pola, np. total
-            
+                quantity: item.quantity,
+                subtotal: item.products.reduce((subtotal, product) => {
+                    const productPrice = parseFloat(product.cartItem.price);
+                    return subtotal + productPrice * product.quantity;
+                }, 0),
+                total: item.products.reduce((total, product) => {
+                    const productPrice = parseFloat(product.cartItem.price);
+                    return total + productPrice * product.quantity;
+                }, 0),
+                delivery_status: "pending",
+                payment_status: "unpaid"
+            }))
         };
 
-        // Wysłanie żądania do API
+        // Wysłanie żądania do API za pomocą Axios lub innej biblioteki
         const response = await axios.post('http://10.0.2.2:3000/api/orders', orderData);
+
         if (response.status === 200) {
             setCartData([]); // Wyczyść koszyk
             Alert.alert("Sukces", "Zamówienie zostało złożone.");
             navigation.navigate('OrderConfirmation'); // Przekierowanie do potwierdzenia
+        } else {
+            Alert.alert('Błąd', 'Nie udało się złożyć zamówienia.');
         }
     } catch (error) {
         console.error('Błąd podczas składania zamówienia:', error);
