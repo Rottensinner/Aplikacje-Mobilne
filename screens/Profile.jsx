@@ -122,19 +122,12 @@ console.log(username);
         </TouchableOpacity>
         {/* Usunięcie błędnego obrazu aparatu i zastąpienie go komponentem ChangeProfilePicture */}
         <ChangeProfilePicture onImageSelected={handleImageSelected} />
-
-      {/* Dodanie przycisku "Zmiana Zdjęcia" */}
-      <TouchableOpacity onPress={() => {/* Obsługa zmiany zdjęcia */}}>
-        <View style={styles.changePictureButton}>
-          <Text style={styles.changePictureButtonText}>Zmiana Zdjęcia</Text>
-        </View>
-      </TouchableOpacity>
       <Text style={styles.name}>
         {userLogin ? userData.username : 'jestem ziemniaczkiem'}
       </Text>
         {userLogin  ? (
           <View style={styles.loginBtn}>
-            <Text style={styles.menuText}> {userData ? userData.userName : "kotek"}</Text>
+            <Text style={styles.namelog}> {userData ? userData.userName : "kotek"}</Text>
           </View>
         ) : (
           <TouchableOpacity onPress={() => navigation.navigate("Login")}>

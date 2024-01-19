@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { PermissionsAndroid } from 'react-native';
+import { COLORS } from '../constants';
 
 const ChangeProfilePicture = ({ onImageSelected }) => {
   const [mounted, setMounted] = useState(true);
@@ -62,7 +63,7 @@ const ChangeProfilePicture = ({ onImageSelected }) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={checkCameraPermission} style={styles.buttonContainer}>
-        <Text style={styles.buttonText}>Zrób i zmień zdjęcie</Text>
+        <Text style={styles.buttonText}>Zmiana zdjęcia</Text>
       </TouchableOpacity>
     </View>
   );
@@ -70,17 +71,19 @@ const ChangeProfilePicture = ({ onImageSelected }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    padding: 10,
+    resizeMode: "cover",
+    marginTop: -160,
+    
   },
   buttonContainer: {
     alignItems: 'center',
+
   },
   buttonText: {
     fontSize: 12,
     marginTop: 5,
+    color: COLORS.gray2,
+
   },
 });
 

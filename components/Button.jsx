@@ -1,21 +1,15 @@
 // Importowanie niezbędnych komponentów, stylów i zasobów
-import { StyleSheet, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text } from 'react-native';
 import React from 'react';
 import { COLORS } from '../constants/index';
 
 // Komponent Button
-const Button = ({ title, onPress, isValid, loader }) => {
+const Button = ({ title, onPress, isValid }) => {
   return (
     // Komponent TouchableOpacity jako przycisk, reagujący na dotyk
     <TouchableOpacity onPress={isValid ? onPress : null} style={styles.btnStyle(isValid === false ? COLORS.gray : COLORS.primary)}>
-      {/* Warunek - czy wyświetlić tekst przycisku czy wskaźnik ładowania */}
-      {loader === false ? (
-        // Tekst przycisku
-        <Text style={styles.btnText}>{title}</Text>
-      ) : (
-        // Wskaźnik ładowania
-        <ActivityIndicator size="small" color={COLORS.white} />
-      )}
+      {/* Tekst przycisku */}
+      <Text style={styles.btnText}>{title}</Text>
     </TouchableOpacity>
   );
 };

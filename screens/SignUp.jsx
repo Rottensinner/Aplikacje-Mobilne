@@ -1,153 +1,179 @@
 import React, { useState } from "react";
-import { ScrollView, Text, View, TextInput, TouchableOpacity, Alert } from "react-native";
+import { ScrollView, Text, View, TextInput, Alert, StyleSheet, ActivityIndicator,TouchableOpacity } from "react-native"; // Dodaj import ActivityIndicator
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Formik } from 'formik';
-import * as Yup from 'yup';
 import { MaterialCommunityIcons } from "@expo/vector-icons"
+import * as Yup from 'yup';
 import { COLORS } from "../constants";
 import { Button, BackBtn } from "../components";
-import styles from "./login.style";
+import axios from "axios";
 
+// Schemat walidacji Yup
 const validationSchema = Yup.object().shape({
-
+  username: Yup.string()
+    .required("Nazwa użytkownika jest wymagana"),
+  email: Yup.string()
+    .email("Błędny adres email")
+    .required("Email jest wymagany"),
   password: Yup.string()
-    .min(8, "Hasło musi składać się z conajmniej 8 znaków")
-    .required("Wymagane"),
-    email: Yup.string()
-    .email("Błędny adres mail")
-    .required("Wymagane"),
+    .min(8, "Hasło musi składać się z co najmniej 8 znaków")
+    .required("Hasło jest wymagane"),
 });
 
+const SignUp = ({ navigation }) => {
+  const [obscureText, setObscureText] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Dodaj stan isLoading
 
-const SignUp=({navigation})=> {
+  const handleSignUp = async (values) => {
+    try {
+      setIsLoading(true); // Ustaw isLoading na true przed wysłaniem żądania
 
-    const [loader, setLoaer] = useState(false);
-    const [obscureText,setObsecureTexy] = useState(false);
-
-    const inValidForm = () => {
-        Alert.alert(
-          "niepoprawna forma",
-          "Wprowadź poprawne dane",
-          [
-            {
-              text: "nie", onPress: () => console.log("nie")
-            },
-            {
-              text: "ok", onPress: () => console.log("tak")
-            },
-            
-          ]
-        )
+      const response = await axios.post('http://10.0.2.2:3000/api/register', {
+        username: values.username,
+        email: values.email,
+        password: values.password,
+      });
+      
+      if (response.status === 201) {
+        // Użytkownik został pomyślnie zarejestrowany
+        Alert.alert("Sukces", "Konto zostało pomyślnie założone.");
+        navigation.navigate('Login'); // Przekieruj użytkownika na ekran logowania
       }
+    } catch (error) {
+      console.error('Błąd podczas rejestracji:', error.response.data);
+      // Obsłuż błąd rejestracji
+      if (error.response && error.response.data) {
+        Alert.alert("Błąd", error.response.data.message);
+      } else {
+        Alert.alert("Błąd", "Wystąpił nieoczekiwany błąd podczas rejestracji.");
+      }
+    } finally {
+      setIsLoading(false); // Ustaw isLoading na false po zakończeniu rejestracji (zarówno po sukcesie, jak i błędzie)
+    }
+  };
 
+  return (
+    <ScrollView>
+      <SafeAreaView style={styles.container}>
+        <BackBtn onPress={() => navigation.goBack()} />
 
-    return(
-        <ScrollView>
-        <SafeAreaView style={{marginHorizontal : 20}}>
-        <BackBtn onPress={()=>navigation.goBack()}></BackBtn>
-
-            <View>
-                <Text style={styles.title}>Nie bądz taki zaloguj się</Text>
-                <Formik
-                        initialValues= {{email: '', password:'',username:''}}
-                        validationSchema= {validationSchema}
-                        onSubmit={(values) => console.log(values) }
-                >
-                {({ handleChange, handleBlur,touched, handleSubmit, values, errors, isValid, setFieldTouched }) => (
+        <View style={styles.content}>
+          <Text style={styles.title}>Zarejestruj się</Text>
+          <Formik
+            initialValues={{ username: '', email: '', password: '' }}
+            validationSchema={validationSchema}
+            onSubmit={handleSignUp}
+          >
+            {({ handleChange, handleBlur, touched, handleSubmit, values, errors, isValid }) => (
               <View>
-                  <View style={styles.wrapper}>
-                        <Text style={styles.label}>Email</Text>
-                        <View style={styles.inputWrapper(touched.email ? COLORS.gray: COLORS.offwhite)}>
-                        <MaterialCommunityIcons
-                        name="account-outline"
-                        size={20}
-                        color={COLORS.gray}
-                        style={styles.iconStyle}/>
-                        
+                <View style={styles.inputWrapper}>
+                  <Text style={styles.label}>Nazwa użytkownika</Text>
                   <TextInput 
-                  placeholder="Username "
-                    onFocus={()=>{setFieldTouched('username')}}
-                    onBlur={()=>{setFieldTouched('username','')}}
+                    placeholder="Nazwa użytkownika"
+                    onBlur={handleBlur('username')}
                     value={values.username}
-                    onChangeText={handleChange('email')}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    style={{flex:1}}
-                  />      
-                  </View>
-                  {touched.username && errors.username &&(
-                    <Text style={styles.errorMessage}>{errors.username}</Text>
-                  ) }
-                    </View>
-                    <View style={styles.wrapper}>
-                        <Text style={styles.label}>Username</Text>
-                        <View style={styles.inputWrapper(touched.username ? COLORS.gray: COLORS.offwhite)}>
-                        <MaterialCommunityIcons
-                        name="email-outline"
-                        size={20}
-                        color={COLORS.gray}
-                        style={styles.iconStyle}/>
-                        
+                    onChangeText={handleChange('username')}
+                    style={styles.input}
+                  />
+                  {touched.username && errors.username && (
+                    <Text style={styles.error}>{errors.username}</Text>
+                  )}
+                </View>
+
+                <View style={styles.inputWrapper}>
+                  <Text style={styles.label}>Email</Text>
                   <TextInput 
-                  placeholder="Email"
-                    onFocus={()=>{setFieldTouched('email')}}
-                    onBlur={()=>{setFieldTouched('email','')}}
+                    placeholder="Email"
+                    onBlur={handleBlur('email')}
                     value={values.email}
                     onChangeText={handleChange('email')}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    style={{flex:1}}
-                  />      
-                  </View>
-                  {touched.email && errors.email &&(
-                    <Text style={styles.errorMessage}>{errors.email}</Text>
-                  ) }
-                    </View>
-                        
-                    <View style={styles.wrapper}>
-                        <Text style={styles.label}>Password</Text>
-                        <View style={styles.inputWrapper(touched.password ? COLORS.gray: COLORS.offwhite)}>
-                        <MaterialCommunityIcons
-                        name="lock-outline"
-                        size={20}
-                        color={COLORS.gray}
-                        style={styles.iconStyle}/>
-                        
-                  <TextInput 
-                   secureTextEntry={obscureText}
-                   placeholder="Password"
-                   onFocus={() => { setFieldTouched('password') }}
-                   onBlur={() => { setFieldTouched('password', '') }}
-                   value={values.password}
-                   onChangeText={handleChange('password')}
-                   autoCapitalize="none"
-                   autoCorrect={false}
-                   style={{ flex: 1 }}
-                  />      
-                 
-                 <TouchableOpacity  onPress={()=> {setObsecureText(!obscureText)}}>
-                    <MaterialCommunityIcons
-                    name={obscureText? "eye-outline" : "eye-off-outline"}
-                    size={18}
+                    style={styles.input}
+                  />
+                  {touched.email && errors.email && (
+                    <Text style={styles.error}>{errors.email}</Text>
+                  )}
+                </View>
+
+                <View style={styles.inputWrapper}>
+                  <Text style={styles.label}>Hasło</Text>
+                  <View style={styles.passwordContainer}>
+                    <TextInput 
+                      placeholder="Hasło"
+                      secureTextEntry={obscureText}
+                      onBlur={handleBlur('password')}
+                      value={values.password}
+                      onChangeText={handleChange('password')}
+                      style={styles.input}
                     />
-                 </TouchableOpacity>
+                    <TouchableOpacity onPress={() => setObscureText(!obscureText)}>
+                      <MaterialCommunityIcons
+                        name={obscureText ? "eye-outline" : "eye-off-outline"}
+                        size={24}
+                        style={styles.icon}
+                      />
+                    </TouchableOpacity>
                   </View>
-                  {touched.password && errors.password &&(
-                    <Text style={styles.errorMessage}>{errors.password}</Text>
-                  ) }
+                  {touched.password && errors.password && (
+                    <Text style={styles.error}>{errors.password}</Text>
+                  )}
+                </View>
 
-     </View>
+                <Button title="Zarejestruj się" onPress={isValid ? handleSubmit : () => Alert.alert("Niepoprawne dane", "Wprowadź poprawne dane")} isValid={!isLoading} loader={isLoading} />      
+                </View>
+            )}
+          </Formik>
+          {/* Warunkowe renderowanie kręcącej się ikonki */}
+          {isLoading && <ActivityIndicator size="large" color={COLORS.primary} />}
+        </View>
+      </SafeAreaView>
+    </ScrollView>
+  );
+};
 
-     <Button title={"SignUp"} onPress={isValid ? handleSubmit : inValidForm} isValid={isValid}/>
-   
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  content: {
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: COLORS.primary,
+    alignSelf: 'center',
+    marginVertical: 20,
+  },
+  inputWrapper: {
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  input: {
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.primary,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    fontSize: 16,
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.primary,
+  },
+  icon: {
+    padding: 10,
+    textAlign: "right",
+    
+  },
+  error: {
+    color: 'red',
+    fontSize: 14,
+    marginTop: 5,
+  },
+});
 
-   </View>
- )}
-                  
-                  </Formik>
-            </View>
-        </SafeAreaView>
-        </ScrollView>
-    )
-}
-export default SignUp
+export default SignUp;

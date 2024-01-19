@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   menuItem: (borderBottomWidth) => ({
     borderBottomWidth: borderBottomWidth,
     flexDirection: "row",
-    paddingHorizontal: 30, // Poprawiona literówka
+    paddingHorizontal: 10, // Poprawiona literówka
     paddingVertical: 15, // Poprawiona literówka
     borderColor: COLORS.gray,
   }),
@@ -67,6 +67,9 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
   },
+  namelog:{
+    padding: 10,
+  }
 });
 
 
