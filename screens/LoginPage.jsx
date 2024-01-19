@@ -121,7 +121,6 @@ const LoginPage = ({ navigation }) => {
   return (
     <ScrollView>
       <SafeAreaView style={{ marginHorizontal: 20 }}>
-        <BackBtn onPress={() => navigation.goBack()}></BackBtn>
         <View>
           <Text style={styles.title}>Nie bądz taki zaloguj się</Text>
           <Formik

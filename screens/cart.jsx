@@ -49,12 +49,20 @@ const Cart = ({ navigation }) => {
     try {
       console.log('Rozpoczęto pobieranie danych koszyka...');
       const a = JSON.parse(userId);
-      console.log(a);
       const zapytanie = `http://10.0.2.2:3000/api/cart/find/${a}`;
       console.log(zapytanie);
       const response = await axios.get(zapytanie);
       console.log('Odpowiedź z serwera:', response.data);
-      setCartData(response.data);
+  
+      // Pobierz product.id z response.data i zaktualizuj stan koszyka
+      const cartProducts = response.data.map(item => {
+        const productIds = item.products.map(product => product.id); // Tutaj pobieramy product.id
+        return {
+          ...item,
+          productIds: productIds
+        };
+      });
+      setCartData(cartProducts);
     } catch (error) {
       console.error('Błąd podczas pobierania danych koszyka:', error);
     } finally {
@@ -66,10 +74,10 @@ const Cart = ({ navigation }) => {
   // Funkcja do usuwania przedmiotu z koszyka
   const removeFromCart = async (cartItemId) => {
     try {
-      const response = await axios.delete(`http://10.0.2.2:3000/api/cart/${userId}/${cartItemId}`);
+      const response = await axios.delete(`http://10.0.2.2:3000/api/cart/${cartItemId}`);
+  
       if (response.status === 200) {
-        // Odśwież dane koszyka po pomyślnym usunięciu przedmiotu
-        fetchCartData();
+        fetchCartData(); // Odśwież dane koszyka
         Alert.alert("Usunięto", "Produkt został usunięty z koszyka.");
       }
     } catch (error) {
@@ -81,19 +89,31 @@ const Cart = ({ navigation }) => {
   // Funkcja do składania zamówienia
   const placeOrder = async () => {
     try {
-      const response = await axios.post('http://10.0.2.2:3000/api/order', { userId, products: cartData });
-      if (response.status === 200) {
-        // Wyczyść koszyk po pomyślnym złożeniu zamówienia
-        setCartData([]);
-        Alert.alert("Sukces", "Zamówienie zostało złożone.");
-        // Tutaj możesz przekierować użytkownika na stronę potwierdzenia zamówienia
-        navigation.navigate('OrderConfirmation');
-      }
+      
+        // Przygotowanie danych zamówienia
+        const orderData = {
+            userId,
+            products: cartData.map(item => ({
+                productId: item.productId,
+                quantity: item.quantity
+            })),
+            // Dodaj inne wymagane pola, np. total
+            
+        };
+
+        // Wysłanie żądania do API
+        const response = await axios.post('http://10.0.2.2:3000/api/orders', orderData);
+        if (response.status === 200) {
+            setCartData([]); // Wyczyść koszyk
+            Alert.alert("Sukces", "Zamówienie zostało złożone.");
+            navigation.navigate('OrderConfirmation'); // Przekierowanie do potwierdzenia
+        }
     } catch (error) {
-      console.error('Błąd podczas składania zamówienia:', error);
-      Alert.alert('Błąd', 'Nie udało się złożyć zamówienia.');
+        console.error('Błąd podczas składania zamówienia:', error);
+        Alert.alert('Błąd', 'Nie udało się złożyć zamówienia.');
     }
-  };
+};
+
 
   // Funkcja do zwiększania ilości produktu w koszyku
   const increaseQuantity = (cartItemId, productId) => {
@@ -129,47 +149,47 @@ const Cart = ({ navigation }) => {
         <Text style={styles.emptyCartText}>Twój koszyk jest pusty.</Text>
       ) : (
         <FlatList
-          data={cartData}
-          keyExtractor={(item) => item._id.toString()}
-          renderItem={({ item }) => (
-            <View style={styles.cartItem}>
-              {item.products.map((product, index) => {
-                // Pobierz cenę produktu z obiektu produktu
-                const productPrice = parseFloat(product.cartItem.price);
-
-                return (
-                  <View style={styles.productContainer} key={index}>
-                    <Image
-                      source={{ uri: product.cartItem.imageUrl }}
-                      style={styles.productThumbnail}
-                    />
-                    <View style={styles.productInfo}>
-                      <Text style={styles.productName}>Nazwa produktu: {product.cartItem.title}</Text>
-                      <Text style={styles.productPrice}>Cena produktu: {productPrice.toFixed(2)} zł</Text>
-                      <View style={styles.quantityContainer}>
-                        <TouchableOpacity onPress={() => increaseQuantity(item._id, product._id)} style={styles.quantityButton}>
-                          <Text style={styles.quantityButtonText}>+</Text>
-                        </TouchableOpacity>
-                        <Text style={styles.productQuantity}>{product.quantity}</Text>
-                        <TouchableOpacity onPress={() => decreaseQuantity(item._id, product._id)} style={styles.quantityButton}>
-                          <Text style={styles.quantityButtonText}>-</Text>
-                        </TouchableOpacity>
-                      </View>
+        data={cartData}
+        keyExtractor={(item) => item._id.toString()}
+        renderItem={({ item }) => (
+          <View style={styles.cartItem}>
+            {item.products.map((product, index) => {
+              // Pobierz cenę produktu z obiektu produktu
+              const productPrice = parseFloat(product.cartItem.price);
+      
+              return (
+                <View style={styles.productContainer} key={index}>
+                  <Image
+                    source={{ uri: product.cartItem.imageUrl }}
+                    style={styles.productThumbnail}
+                  />
+                  <View style={styles.productInfo}>
+                    <Text style={styles.productName}>Nazwa produktu: {product.cartItem.title}</Text>
+                    <Text style={styles.productPrice}>Cena produktu: {productPrice.toFixed(2)} zł</Text>
+                    <View style={styles.quantityContainer}>
+                      <TouchableOpacity onPress={() => increaseQuantity(item._id, product._id)} style={styles.quantityButton}>
+                        <Text style={styles.quantityButtonText}>+</Text>
+                      </TouchableOpacity>
+                      <Text style={styles.productQuantity}>{product.quantity}</Text>
+                      <TouchableOpacity onPress={() => decreaseQuantity(item._id, product._id)} style={styles.quantityButton}>
+                        <Text style={styles.quantityButtonText}>-</Text>
+                      </TouchableOpacity>
                     </View>
                   </View>
-                );
-              })}
-              {/* Przycisk do usuwania przedmiotu z koszyka */}
-              <TouchableOpacity onPress={() => removeFromCart(item._id)}>
-                <MaterialCommunityIcons
-                  name="delete"
-                  size={24}
-                  color={COLORS.primary}
-                />
-              </TouchableOpacity>
-            </View>
-          )}
-        />
+                  {/* Przycisk do usuwania przedmiotu z koszyka */}
+                  <TouchableOpacity onPress={() => removeFromCart(product._id)}>
+                    <MaterialCommunityIcons
+                      name="delete"
+                      size={24}
+                      color={COLORS.primary}
+                    />
+                  </TouchableOpacity>
+                </View>
+              );
+            })}
+          </View>
+        )}
+      />
       )}
       {cartData.length > 0 && (
         <View style={styles.cartFooter}>
@@ -186,12 +206,16 @@ const Cart = ({ navigation }) => {
               return total + itemTotalPrice;
             }, 0).toFixed(2)} zł
           </Text>
-          <TouchableOpacity
+          {cartData.length > 0 && (
+    <View style={styles.cartFooter}>
+        <TouchableOpacity
             style={styles.placeOrderButton}
             onPress={placeOrder}
-          >
+        >
             <Text style={styles.placeOrderButtonText}>Złóż zamówienie</Text>
-          </TouchableOpacity>
+        </TouchableOpacity>
+    </View>
+)}
         </View>
       )}
     </View>
