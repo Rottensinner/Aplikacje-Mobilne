@@ -6,7 +6,6 @@ import { COLORS } from '../constants';
 import styles from './profile.style';
 import { BackBtn } from '../components';
 import ChangeProfilePicture from '../components/ChangeProfilePicture';
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 
 
 const Profile = ({ navigation }) => {
@@ -45,7 +44,7 @@ const Profile = ({ navigation }) => {
   };
   const ClearCache = () => {
     Alert.alert(
-      "Clear Cache",
+      "Wyczyść pamięć",
       "Jesteś pewien że chcesz usunąć zapisane dane?",
       [
         {
@@ -114,13 +113,12 @@ console.log(username);
         />
       </View>
       <View style={styles.profileContainer}>
-        <TouchableOpacity onPress={() => {/* Otworzenie wyboru zdjęć */}}>
+        <TouchableOpacity onPress={() => {}}>
         <Image
   source={profilePic ? { uri: profilePic } : require('../assets/images/profile.jpg')}
   style={styles.profile}
 />
         </TouchableOpacity>
-        {/* Usunięcie błędnego obrazu aparatu i zastąpienie go komponentem ChangeProfilePicture */}
         <ChangeProfilePicture onImageSelected={handleImageSelected} />
       <Text style={styles.name}>
         {userLogin ? userData.username : 'jestem ziemniaczkiem'}
@@ -170,16 +168,7 @@ console.log(username);
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => deleteAccount()}>
-              <View style={styles.menuItem(0.2)}>
-                <AntDesign
-                  name="deleteuser"
-                  color={COLORS.primary}
-                  size={24}
-                />
-                <Text style={styles.menuText}>delete User</Text>
-              </View>
-            </TouchableOpacity>
+            
             <TouchableOpacity onPress={() => logout()}>
               <View style={styles.menuItem(0.2)}>
                 <AntDesign
@@ -187,7 +176,7 @@ console.log(username);
                   color={COLORS.primary}
                   size={24}
                 />
-                <Text style={styles.menuText}>Logout</Text>
+                <Text style={styles.menuText}>Wyloguj</Text>
               </View>
             </TouchableOpacity>
           </View>

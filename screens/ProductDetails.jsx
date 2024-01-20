@@ -168,7 +168,7 @@ const ProductDetails = ({ navigation }) => {
                     <Text style={styles.description}>
                         Opis produktu
                     </Text>
-                    <Text style={styles.descText}>{item.description}</Text>
+                    <Text style={styles.descText}>{item.descryption}</Text>
                 </View>
 
                 <View style={{marginBottom: SIZES.xLarge}}>

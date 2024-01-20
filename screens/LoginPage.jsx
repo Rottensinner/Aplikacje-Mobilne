@@ -1,17 +1,16 @@
-import { ScrollView, Text, View, TouchableOpacity, TextInput, Alert } from "react-native";
+import { ScrollView, Text, View, TouchableOpacity, Image, TextInput, Alert } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styles from "./login.style";
-import { Button } from "../components"; // Upewnij się, że Button jest właściwie zaimportowane
-// Niepotrzebny import BackBtn został usunięty
+import { Button, BackBtn } from "../components";
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { COLORS } from "../constants";
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Schemat walidacji dla formularza logowania
+
 const validationSchema = Yup.object().shape({
   password: Yup.string()
     .min(8, 'Must be 8 characters or more')
@@ -21,28 +20,98 @@ const validationSchema = Yup.object().shape({
 
 const LoginPage = ({ navigation }) => {
   const [loader, setLoader] = useState(false);
+  const [responseData, setResponseData] = useState(null);
   const [obscureText, setObsecureText] = useState(false);
+  const [username, setUsername] = useState('');
 
-  // Funkcja wyświetlająca alert o błędnej formie
+  const [loggedInUsername, setLoggedInUsername] = useState('');
+
+
   const invalidForm = () => {
-    Alert.alert("Niepoprawna forma", "Wprowadź poprawne dane");
-  };
+    Alert.alert(
+      "Niepoprawna forma",
+      "Wprowadź poprawne dane",
+      [
+        {
+          text: "Nie", onPress: () => console.log("Nie")
+        },
+        {
+          text: "Ok", onPress: () => console.log("Tak")
+        },
 
-  // Główna funkcja logowania
+      ]
+    )
+  };
+    // Główna funkcja logowania
   const login = async (values) => {
     setLoader(true);
     try {
       const response = await axios.post('http://10.0.2.2:3000/api/login', values);
-      if (response.status === 200 && response.data._id) {
-        await AsyncStorage.setItem(`user${response.data._id}`, JSON.stringify(response.data));
-        navigation.replace("Bottom Navigation");
+  
+      console.log(response.status);
+      if (response.status === 200) {
+        const responseData = response.data;
+        if (responseData._id) {
+          console.log(`user${responseData._id}`);
+  
+          await AsyncStorage.setItem(`user${responseData._id}`, JSON.stringify(responseData));
+          await AsyncStorage.setItem(`id`, JSON.stringify(responseData._id));
+          
+
+          setLoader(false);
+          const userName = responseData.userName;
+          console.log(`Zalogowany jako: ${userName}`);
+          await AsyncStorage.setItem('userName', userName); // Zapisz nazwę użytkownika bezpośrednio w AsyncStorage
+  
+          navigation.replace("Bottom Navigation");
+        } else {
+          setTimeout(async () => {
+            const secondResponse = await axios.post('http://10.0.2.2:3000/api/login', values);
+            if (secondResponse.status === 200 && secondResponse.data._id) {
+              const secondResponseData = secondResponse.data;
+              console.log(`user${secondResponseData._id}`);
+              await AsyncStorage.setItem(`user${secondResponseData._id}`, JSON.stringify(secondResponseData));
+              await AsyncStorage.setItem(`id`, JSON.stringify(secondResponseData._id));
+              setLoader(false);
+              navigation.replace("Bottom Navigation");
+            } else {
+              Alert.alert(
+                "Błąd logowania",
+                "Wprowadź poprawne dane",
+                [
+                  {
+                    text: "Ok",
+                    onPress: () => console.log("Tak"),
+                  },
+                ]
+              );
+            }
+          }, 1000); //Opóźnienie żeby serwer podał dane
+        }
       } else {
-        // Informacja dla użytkownika, gdy dane logowania są niepoprawne
-        Alert.alert("Błąd logowania", "Wprowadź poprawne dane");
+        Alert.alert(
+          "Błąd logowania",
+          "Wprowadź poprawne dane",
+          [
+            {
+              text: "Ok",
+              onPress: () => console.log("Tak"),
+            },
+          ]
+        );
       }
     } catch (error) {
-      // Informacja o błędzie logowania
-      Alert.alert("Błąd logowania", "Wystąpił problem podczas logowania. Spróbuj ponownie.");
+      console.error("Błąd logowania:", error);
+      Alert.alert(
+        "Błąd logowania",
+        "Wystąpił problem podczas logowania. Spróbuj ponownie.",
+        [
+          {
+            text: "Ok",
+            onPress: () => console.log("Tak"),
+          },
+        ]
+      );
     } finally {
       setLoader(false);
     }
@@ -51,67 +120,84 @@ const LoginPage = ({ navigation }) => {
   return (
     <ScrollView>
       <SafeAreaView style={{ marginHorizontal: 20 }}>
-        <Text style={styles.title}>Nie bądź taki zaloguj się</Text>
-        <Formik
-          initialValues={{ email: '', password: '' }}
-          validationSchema={validationSchema}
-          onSubmit={(values) => login(values)}
-        >
-          {({ handleChange, handleBlur, touched, handleSubmit, values, errors, isValid }) => (
-            <>
-              {/* Sekcja email */}
-              <View style={styles.wrapper}>
-                <Text style={styles.label}>Email</Text>
-                <View style={styles.inputWrapper}>
-                  <MaterialCommunityIcons name="email-outline" size={20} color={COLORS.gray} />
-                  <TextInput
-                    placeholder="Email"
-                    onBlur={handleBlur('email')}
-                    value={values.email}
-                    onChangeText={handleChange('email')}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                  />
+        <View>
+          <Text style={styles.title}>Nie bądz taki zaloguj się</Text>
+          <Formik
+            initialValues={{ email: '', password: '' }}
+            validationSchema={validationSchema}
+            onSubmit={(values) => login(values)}
+          >
+            {({ handleChange, handleBlur, touched, handleSubmit, values, errors, isValid, setFieldTouched }) => (
+              <View>
+                <View style={styles.wrapper}>
+                  <Text style={styles.label}>Email</Text>
+                  <View style={styles.inputWrapper(touched.email ? COLORS.gray : COLORS.offwhite)}>
+                    <MaterialCommunityIcons
+                      name="email-outline"
+                      size={20}
+                      color={COLORS.gray}
+                      style={styles.iconStyle}
+                    />
+                    <TextInput
+                      placeholder="Email"
+                      onFocus={() => { setFieldTouched('email') }}
+                      onBlur={() => { setFieldTouched('email', '') }}
+                      value={values.email}
+                      onChangeText={handleChange('email')}
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      style={{ flex: 1 }}
+                    />
+                  </View>
+                  {touched.email && errors.email && (
+                    <Text style={styles.errorMessage}>{errors.email}</Text>
+                  )}
                 </View>
-                {touched.email && errors.email && <Text style={styles.errorMessage}>{errors.email}</Text>}
-              </View>
 
-              {/* Sekcja hasła */}
-              <View style={styles.wrapper}>
-                <Text style={styles.label}>Password</Text>
-                <View style={styles.inputWrapper}>
-                  <MaterialCommunityIcons name="lock-outline" size={20} color={COLORS.gray} />
-                  <TextInput
-                    secureTextEntry={obscureText}
-                    placeholder="Password"
-                    onBlur={handleBlur('password')}
-                    value={values.password}
-                    onChangeText={handleChange('password')}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                  />
-                  {/* Przycisk pokazania/ukrycia hasła */}
-                  <TouchableOpacity onPress={() => { setObsecureText(!obscureText) }}>
-                    <MaterialCommunityIcons name={obscureText ? "eye-outline" : "eye-off-outline"} size={18} />
-                  </TouchableOpacity>
+                <View style={styles.wrapper}>
+                  <Text style={styles.label}>Password</Text>
+                  <View style={styles.inputWrapper(touched.password ? COLORS.gray : COLORS.offwhite)}>
+                    <MaterialCommunityIcons
+                      name="lock-outline"
+                      size={20}
+                      color={COLORS.gray}
+                      style={styles.iconStyle}
+                    />
+                    <TextInput
+                      secureTextEntry={obscureText}
+                      placeholder="Password"
+                      onFocus={() => { setFieldTouched('password') }}
+                      onBlur={() => { setFieldTouched('password', '') }}
+                      value={values.password}
+                      onChangeText={handleChange('password')}
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      style={{ flex: 1 }}
+                    />
+                    <TouchableOpacity onPress={() => { setObsecureText(!obscureText) }}>
+                      <MaterialCommunityIcons
+                        name={obscureText ? "eye-outline" : "eye-off-outline"}
+                        size={18}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  {touched.password && errors.password && (
+                    <Text style={styles.errorMessage}>{errors.password}</Text>
+                  )}
                 </View>
-                {touched.password && errors.password && <Text style={styles.errorMessage}>{errors.password}</Text>}
-              </View>
 
-              {/* Przycisk logowania */}
-              <Button
+
+                <Button
                 loader={loader}
-                title={"L O G I N"}
-                onPress={isValid ? handleSubmit : invalidForm}
-              />
-
-              {/* Link do rejestracji */}
-              <Text style={styles.registration} onPress={() => navigation.navigate('SignUp')}>
-                Register
-              </Text>
-            </>
-          )}
-        </Formik>
+                 title={"L O G I N"}
+                 onPress={isValid ? handleSubmit : invalidForm} 
+                 isValid={isValid}
+                 />
+                <Text style={styles.registration} onPress={() => navigation.navigate('SignUp')}>Register</Text>
+              </View>
+            )}
+          </Formik>
+        </View>
       </SafeAreaView>
     </ScrollView>
   )

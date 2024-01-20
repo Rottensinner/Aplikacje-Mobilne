@@ -10,7 +10,7 @@ const Orders = () => {
         try {
             const response = await fetch('http://10.0.2.2:3000/api/orders'); // Zakładam, że endpoint to /orders
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                throw new Error('Brak odpowiedzi z serwera');
             }
             return await response.json();
         } catch (error) {
